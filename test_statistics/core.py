@@ -24,8 +24,12 @@ class TestStatisticsPlugin(SettingsMixin, UrlsMixin, UserInterfaceMixin, InvenTr
     def setup_urls(self):
         """Returns the URLs defined by this plugin."""
 
-        # TODO: Define the URL patterns for this plugin
-        return []
+        from django.urls import path
+        from .views import TestStatisticsView
+
+        return [
+            path('statistics/', TestStatisticsView.as_view(), name='test-statistics'),
+        ]
 
     def get_ui_panels(self, request, context=None, **kwargs):
         """Return the UI panels for this plugin."""
