@@ -35,6 +35,7 @@ class TestStatisticsRequestSerializer(serializers.Serializer):
     finished_before = serializers.DateTimeField(required=False, label='Finished Before')
     finished_after = serializers.DateTimeField(required=False, label='Finished After')
 
+
 class TestStatisticsSerializer(serializers.Serializer):
     """Serializer for encoding test statistics results for the TestStatistics plugin."""
 
