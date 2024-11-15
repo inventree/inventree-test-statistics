@@ -1,3 +1,3 @@
 """Version information for the inventree-test-statistics plugin."""
 
-PLUGIN_VERSION = "0.3.3"
+PLUGIN_VERSION = "0.1.0"

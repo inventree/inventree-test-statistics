@@ -1,12 +1,12 @@
 """Test statistics plugin for InvenTree."""
 
-from plugin import InventreePlugin
+from plugin import InvenTreePlugin
 from plugin.mixins import SettingsMixin, UrlsMixin, UserInterfaceMixin
 
 from .version import PLUGIN_VERSION
 
 
-class TestStatisticsPlugin(SettingsMixin, UrlsMixin, UserInterfaceMixin, InventreePlugin):
+class TestStatisticsPlugin(SettingsMixin, UrlsMixin, UserInterfaceMixin, InvenTreePlugin):
     """Test statistics plugin for InvenTree."""
 
     AUTHOR = "InvenTree Contributors"
