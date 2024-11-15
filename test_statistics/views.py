@@ -23,10 +23,18 @@ class TestStatisticsView(APIView):
 
         params = cast(dict, serializer.validated_data)
 
+        templates = self.filter_templates(**params)
         results = self.filter_results(**params)
 
         # Map each result to the corresponding template
         template_data = {}
+
+        for template in templates:
+            template_data[template.pk] = {
+                'template': template,
+                'pass_count': 0,
+                'fail_count': 0,
+            }
 
         for result in results:
             if result.template.pk not in template_data:
@@ -47,6 +55,30 @@ class TestStatisticsView(APIView):
         data = StatisticsSerializers.TestStatisticsSerializer(template_list, many=True).data
 
         return Response(data)
+
+    def filter_templates(self, **kwargs):
+        """Generate a list of 'expected' test templates pased on the provided parameters."""
+
+        from part.models import PartTestTemplate
+
+        templates = PartTestTemplate.objects.all()
+
+        # Filter by Part
+        if part := kwargs.get('part'):
+
+            include_variants = kwargs.get('include_variants', False)
+
+            if include_variants:
+                templates = templates.filter(part__in=part.get_descendants(include_self=True))
+            else:
+                templates = templates.filter(part=part)
+        
+        # Filter by Build Order
+        if build := kwargs.get('build'):
+            if part := build.part:
+                templates = templates.filter(part=part)
+
+        return templates
 
     def filter_results(self, **kwargs):
         """Filter the StockItemTestResult queryset based on the provided parameters.
