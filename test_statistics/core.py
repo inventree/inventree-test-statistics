@@ -34,6 +34,9 @@ class TestStatisticsPlugin(SettingsMixin, UrlsMixin, UserInterfaceMixin, InvenTr
     def get_ui_panels(self, request, context=None, **kwargs):
         """Return the UI panels for this plugin."""
 
+        from build.models import Build
+        from part.models import Part
+
         user = request.user
 
         if not user or not user.is_authenticated:
@@ -42,5 +45,44 @@ class TestStatisticsPlugin(SettingsMixin, UrlsMixin, UserInterfaceMixin, InvenTr
         # Cache the settings for this plugin
         self.plugin_settings = self.get_settings_dict()
 
-        # TODO: Define the UI panels for this plugin
-        return []
+        valid_target = False
+
+        stat_filters = {}
+
+        target_model = context.get('target_model', None)
+        target_id = context.get('target_id', None)
+
+        if target_model == 'build':
+            try:
+                build = Build.objects.get(pk=target_id)
+                part = build.part
+                if part.testable:
+                    valid_target = True
+                    stat_filters['build'] = build.pk
+            except Build.DoesNotExist:
+                pass
+        
+        elif target_model == 'part':
+            try:
+                part = Part.objects.get(pk=target_id)
+                if part.testable:
+                    valid_target = True
+                    stat_filters['part'] = part.pk
+            except Part.DoesNotExist:
+                pass
+        
+        if not valid_target:
+            return []
+
+        return [
+            {
+                'key': 'test-statistics',
+                'title': 'Test Statistics',
+                'template': 'test_statistics/panel.html',
+                'source': self.plugin_static_file('TestStatisticsPanel.js:renderPanel'),
+                'context': {
+                    'settings': self.plugin_settings,
+                    'filters': stat_filters,
+                }
+            }
+        ]
