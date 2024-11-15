@@ -30,7 +30,7 @@ setuptools.setup(
     python_requires=">=3.9",
     entry_points={
         "inventree_plugins": [
-            "TestStatistics = order_history.core:TestStatisticsPlugin",
+            "TestStatistics = test_statistics.core:TestStatisticsPlugin",
         ]
     },
 )
