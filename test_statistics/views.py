@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.views import APIView
 
-from . import serializers as StatisticsSerializers
+from . import serializers
 
 
 class TestStatisticsView(APIView):
@@ -18,7 +18,7 @@ class TestStatisticsView(APIView):
         """Generate test statistics data based on the provided parameters."""
 
         # Extract filter parameters from the request
-        serializer = StatisticsSerializers.TestStatisticsRequestSerializer(data=request.query_params)
+        serializer = serializers.TestStatisticsRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
 
         params = cast(dict, serializer.validated_data)
@@ -52,7 +52,7 @@ class TestStatisticsView(APIView):
         # Serialize the results
         template_list = list(template_data.values())
 
-        data = StatisticsSerializers.TestStatisticsSerializer(template_list, many=True).data
+        data = serializers.TestStatisticsSerializer(template_list, many=True).data
 
         return Response(data)
 
