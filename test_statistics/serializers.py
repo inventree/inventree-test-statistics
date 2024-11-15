@@ -18,6 +18,10 @@ class TestStatisticsRequestSerializer(serializers.Serializer):
             'include_variants',
             'build',
             'stock_item',
+            'started_before',
+            'started_after',
+            'finished_before',
+            'finished_after',
         ]
 
     template = serializers.PrimaryKeyRelatedField(queryset=PartTestTemplate.objects.all(), many=False, required=False, label='Template')
@@ -26,6 +30,10 @@ class TestStatisticsRequestSerializer(serializers.Serializer):
     build = serializers.PrimaryKeyRelatedField(queryset=Build.objects.all(), many=False, required=False, label='Build Order')
     stock_item = serializers.PrimaryKeyRelatedField(queryset=StockItem.objects.all(), many=False, required=False, label='Stock Item')
 
+    started_before = serializers.DateTimeField(required=False, label='Started Before')
+    started_after = serializers.DateTimeField(required=False, label='Started After')
+    finished_before = serializers.DateTimeField(required=False, label='Finished Before')
+    finished_after = serializers.DateTimeField(required=False, label='Finished After')
 
 class TestStatisticsSerializer(serializers.Serializer):
     """Serializer for encoding test statistics results for the TestStatistics plugin."""
