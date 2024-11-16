@@ -56,7 +56,7 @@ function TestStatisticsPanel({context}: {context: any}) {
             },
             {
                 accessor: 'pass_count',
-                title: 'Pass',
+                title: 'Passed',
                 render: (record: any) => {
                     let total = record.pass_count + record.fail_count;
                     let pass_pct = total > 0 ? (record.pass_count / total) * 100 : 0;
@@ -71,7 +71,7 @@ function TestStatisticsPanel({context}: {context: any}) {
             },
             {
                 accessor: 'fail_count',
-                title: 'Fail',
+                title: 'Failed',
                 render: (record: any) => {
                     let total = record.pass_count + record.fail_count;
                     let fail_pct = total > 0 ? (record.fail_count / total) * 100 : 0;
