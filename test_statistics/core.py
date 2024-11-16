@@ -80,6 +80,7 @@ class TestStatisticsPlugin(SettingsMixin, UrlsMixin, UserInterfaceMixin, InvenTr
                 'title': 'Test Statistics',
                 'template': 'test_statistics/panel.html',
                 'source': self.plugin_static_file('TestStatisticsPanel.js:renderPanel'),
+                'icon': 'ti:test-report-analytics:outline',
                 'context': {
                     'settings': self.plugin_settings,
                     'filters': stat_filters,
