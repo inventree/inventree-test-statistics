@@ -1,4 +1,4 @@
-import { Box, LoadingOverlay, MantineProvider, Paper} from '@mantine/core';
+import { Box, Group, LoadingOverlay, MantineProvider, Paper, Text} from '@mantine/core';
 import { useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
 import { QueryClient, useQuery } from '@tanstack/react-query';
@@ -56,11 +56,33 @@ function TestStatisticsPanel({context}: {context: any}) {
             },
             {
                 accessor: 'pass_count',
-                title: 'Pass',
+                title: 'Passed',
+                render: (record: any) => {
+                    let total = record.pass_count + record.fail_count;
+                    let pass_pct = total > 0 ? (record.pass_count / total) * 100 : 0;
+
+                    return (
+                        <Group justify='space-between' wrap="nowrap">
+                            <Text>{record.pass_count}</Text>
+                            {total > 0 && <Text size="xs">({pass_pct.toFixed(2)}%)</Text>}
+                        </Group>
+                    )
+                }
             },
             {
                 accessor: 'fail_count',
-                title: 'Fail',
+                title: 'Failed',
+                render: (record: any) => {
+                    let total = record.pass_count + record.fail_count;
+                    let fail_pct = total > 0 ? (record.fail_count / total) * 100 : 0;
+
+                    return (
+                        <Group justify='space-between' wrap="nowrap">
+                            <Text>{record.fail_count}</Text>
+                            {total > 0 && <Text size="xs">({fail_pct.toFixed(2)}%)</Text>}
+                        </Group>
+                    )
+                }
             },
             {
                 accessor: 'total',
@@ -78,6 +100,10 @@ function TestStatisticsPanel({context}: {context: any}) {
             <Box pos="relative">
             <LoadingOverlay visible={statsQuery.isLoading} />
             <DataTable
+                striped
+                highlightOnHover
+                withTableBorder
+                withColumnBorders
                 records={statsQuery.data}
                 columns={columns}
                 />
