@@ -9,8 +9,13 @@ An [InvenTree](https://inventree.org) plugin for generating and viewing statisti
 
 ## Description
 
-... TODO ...
+The *Test Statistics* plugin provides a number of tools for generating and viewing statistical test data, which can be displayed dynamically in the user interface, or exported to a file for further processing.
 
+Test statistics can be generated for a particular part, or for a selected build order.
+
+| Context | Screenshot |
+| --- | --- |
+| Test for a part (including variants) | ![Part Test Statistics](docs/img/stats.png) |
 
 ## Installation
 
@@ -18,7 +23,7 @@ An [InvenTree](https://inventree.org) plugin for generating and viewing statisti
 
 The simplest way to install this plugin is from the InvenTree plugin interface. Enter the plugin name (`inventree-test-statistics`) and click the `Install` button:
 
-... TODO ...
+![Install Plugin](docs/img/install.png)
 
 ### Via Pip
 
@@ -34,7 +39,7 @@ pip install -U inventree-test-statistics
 
 The plugin can be configured via the InvenTree plugin interface. The following settings are available:
 
-... TODO ...
+*TODO: No plugin settings are currently available*
 
 ## Contributing
 
