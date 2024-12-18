@@ -15,7 +15,7 @@ Test statistics can be generated for a particular part, or for a selected build 
 
 | Context | Screenshot |
 | --- | --- |
-| Test for a part (including variants) | ![Part Test Statistics](docs/img/stats.png) |
+| Test for a part (including variants) | ![Part Test Statistics](docs/img/part_stats.png) |
 
 ## Installation
 
