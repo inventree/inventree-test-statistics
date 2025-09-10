@@ -33,4 +33,9 @@ setuptools.setup(
             "TestStatistics = test_statistics.core:TestStatisticsPlugin",
         ]
     },
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "Operating System :: OS Independent",
+        "Framework :: InvenTree",
+    ],
 )
