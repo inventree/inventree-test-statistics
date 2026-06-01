@@ -13,7 +13,7 @@ class TestStatisticsPlugin(SettingsMixin, UrlsMixin, UserInterfaceMixin, InvenTr
     DESCRIPTION = "Test statistics plugin for InvenTree"
     VERSION = PLUGIN_VERSION
 
-    MIN_VERSION = '0.17.0'
+    MIN_VERSION = '1.3.0'
 
     NAME = "Test Statistics"
     SLUG = "test_statistics"
