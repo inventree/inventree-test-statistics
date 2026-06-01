@@ -9,7 +9,7 @@ import { viteExternalsPlugin } from 'vite-plugin-externals'
 export const externalLibs : Record<string, string> = {
   react: 'React',
   'react-dom': 'ReactDOM',
-  'ReactDom': 'ReactDOM',
+  'react-dom/client': 'ReactDOM',
   '@mantine/core': 'MantineCore',
   "@mantine/notifications": 'MantineNotifications',
 };
@@ -56,7 +56,7 @@ export default defineConfig({
           globals: externalLibs,
         }
       ],
-      external: externalKeys,
+      external: (id) => externalKeys.some((key) => id === key || id.startsWith(key + '/')),
     }
   },
   optimizeDeps: {

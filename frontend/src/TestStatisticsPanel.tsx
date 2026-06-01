@@ -1,54 +1,20 @@
-import { Box, Group, LoadingOverlay, MantineProvider, Paper, Text} from '@mantine/core';
+import { Alert, Group, Paper, Text} from '@mantine/core';
 import { useMemo } from 'react';
-import { createRoot } from 'react-dom/client';
-import { QueryClient, useQuery } from '@tanstack/react-query';
-import { DataTable } from 'mantine-datatable';
-
-const queryClient = new QueryClient();
+import { InvenTreePluginContext, InvenTreeTable, useTable } from '@inventreedb/ui';
+import { IconInfoCircle } from '@tabler/icons-react';
 
 const TEST_STATISTICS_URL = "plugin/test_statistics/statistics/";
 
-function TestStatisticsPanel({context}: {context: any}) {
+function TestStatisticsPanel({context}: {context: InvenTreePluginContext}) {
 
-    // Extract query params from the provided context
-    const queryParams: any = useMemo(() => {
-        let filters : any = context.context?.filters ?? {};
-
-
-        filters.include_variants = true;
-        // TODO: Extend based on user selection
-
-        return filters;
-    }, [context.context]);
-
-    const statsQuery = useQuery(
-        {
-            queryKey: [
-                'test-statistics',
-                context.model,
-                context.id,
-                JSON.stringify(queryParams)
-            ], 
-            refetchOnMount: false,
-            refetchOnWindowFocus: false,
-            queryFn: async () => {
-                return context.api?.get(`/${TEST_STATISTICS_URL}`, {
-                    params: queryParams
-                }).then((response: any) => {
-                    return response.data;
-                }).catch(() => {
-                    return [];
-                }) ?? [];
-            }
-        },
-        queryClient,
-    );
+    const tableState = useTable('test-statistics-table');
 
     const columns = useMemo(() => {
         return [
             {
                 accessor: 'template_detail.test_name',
                 title: 'Test Name',
+                switchable: false,
             },
             {
                 accessor: 'template_detail.description',
@@ -57,6 +23,7 @@ function TestStatisticsPanel({context}: {context: any}) {
             {
                 accessor: 'pass_count',
                 title: 'Passed',
+                switchable: false,
                 render: (record: any) => {
                     let total = record.pass_count + record.fail_count;
                     let pass_pct = total > 0 ? (record.pass_count / total) * 100 : 0;
@@ -72,6 +39,7 @@ function TestStatisticsPanel({context}: {context: any}) {
             {
                 accessor: 'fail_count',
                 title: 'Failed',
+                switchable: false,
                 render: (record: any) => {
                     let total = record.pass_count + record.fail_count;
                     let fail_pct = total > 0 ? (record.fail_count / total) * 100 : 0;
@@ -87,6 +55,7 @@ function TestStatisticsPanel({context}: {context: any}) {
             {
                 accessor: 'total',
                 title: 'Total',
+                switchable: false,
                 render: (record: any) => {
                     return record.pass_count + record.fail_count;
                 }
@@ -96,18 +65,24 @@ function TestStatisticsPanel({context}: {context: any}) {
 
     return (
         <>
+        <Alert color='blue' icon={<IconInfoCircle />} title="Test Statistics">
+            This panel displays statistics about the tests that have been executed. The data is aggregated by test template, and includes the total number of times each test has been executed, as well as the pass/fail counts
+            and percentages.
+        </Alert>
         <Paper withBorder p="sm" m="sm">
-            <Box pos="relative">
-            <LoadingOverlay visible={statsQuery.isLoading} />
-            <DataTable
-                striped
-                highlightOnHover
-                withTableBorder
-                withColumnBorders
-                records={statsQuery.data}
+            <InvenTreeTable
+                url={TEST_STATISTICS_URL}
+                tableState={tableState}
                 columns={columns}
-                />
-            </Box>
+                props={{
+                    params: {
+                        ...(context.context?.filters ?? {}),
+                        include_variants: true,
+                    },
+                    enableSearch: false,
+                }}
+                context={context}
+            />
         </Paper>
         </>
     );
@@ -120,12 +95,7 @@ function TestStatisticsPanel({context}: {context: any}) {
  * @param target - The target HTML element to render the panel into
  * @param context - The context object to pass to the panel
  */
-export function renderPanel(target: HTMLElement, context: any) {
+export function renderPanel(context: InvenTreePluginContext) {
 
-    createRoot(target).render(
-        <MantineProvider>
-            <TestStatisticsPanel context={context}/>
-        </MantineProvider>
-    )
-
+    return <TestStatisticsPanel context={context}/>;
 }
