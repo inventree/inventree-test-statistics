@@ -56,7 +56,7 @@ export default defineConfig({
           globals: externalLibs,
         }
       ],
-      external: (id) => externalKeys.some((key) => id === key || id.startsWith(key + '/')),
+      external: externalKeys,
     }
   },
   optimizeDeps: {
