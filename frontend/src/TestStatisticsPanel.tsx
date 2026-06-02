@@ -4,9 +4,21 @@ import {
   useTable
 } from '@inventreedb/ui';
 import { BarChart } from '@mantine/charts';
-import { Alert, Group, Paper, Stack, Switch, Text } from '@mantine/core';
+import {
+  ActionIcon,
+  Alert,
+  Group,
+  Paper,
+  Stack,
+  Switch,
+  Text
+} from '@mantine/core';
 import { type DateValue, MonthPickerInput } from '@mantine/dates';
-import { IconInfoCircle } from '@tabler/icons-react';
+import {
+  IconChevronDown,
+  IconChevronRight,
+  IconInfoCircle
+} from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import type { DataTableRowExpansionProps } from 'mantine-datatable';
 import { useEffect, useMemo, useState } from 'react';
@@ -92,7 +104,21 @@ function TestStatisticsPanel({ context }: { context: InvenTreePluginContext }) {
       {
         accessor: 'template_detail.test_name',
         title: 'Test Name',
-        switchable: false
+        switchable: false,
+        render: (record: any) => {
+          return (
+            <Group gap='xs' wrap='nowrap'>
+              <ActionIcon size='sm' variant='transparent'>
+                {tableState.isRowExpanded(record.template) ? (
+                  <IconChevronDown />
+                ) : (
+                  <IconChevronRight />
+                )}
+              </ActionIcon>
+              <Text>{record.template_detail.test_name}</Text>
+            </Group>
+          );
+        }
       },
       {
         accessor: 'template_detail.description',
@@ -139,7 +165,7 @@ function TestStatisticsPanel({ context }: { context: InvenTreePluginContext }) {
         }
       }
     ];
-  }, []);
+  }, [tableState.isRowExpanded]);
 
   const rowExpansion: DataTableRowExpansionProps<any> = useMemo(() => {
     return {
