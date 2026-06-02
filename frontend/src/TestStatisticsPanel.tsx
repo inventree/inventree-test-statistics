@@ -3,16 +3,87 @@ import {
   InvenTreeTable,
   useTable
 } from '@inventreedb/ui';
-import { Alert, Group, Paper, Stack, Switch, Text } from '@mantine/core';
+import { BarChart } from '@mantine/charts';
+import {
+  ActionIcon,
+  Alert,
+  Group,
+  Paper,
+  Stack,
+  Switch,
+  Text
+} from '@mantine/core';
 import { type DateValue, MonthPickerInput } from '@mantine/dates';
-import { IconInfoCircle } from '@tabler/icons-react';
+import {
+  IconChevronDown,
+  IconChevronRight,
+  IconInfoCircle
+} from '@tabler/icons-react';
 import dayjs from 'dayjs';
+import type { DataTableRowExpansionProps } from 'mantine-datatable';
 import { useEffect, useMemo, useState } from 'react';
 
 const TEST_STATISTICS_URL = 'plugin/test_statistics/statistics/';
 
+interface MonthlyEntry {
+  month: string; // "YYYY-MM-DD"
+  pass_count: number;
+  fail_count: number;
+}
+
+function MonthlyBarChart({
+  record,
+  startDate,
+  endDate
+}: {
+  record: any;
+  startDate: Date;
+  endDate: Date;
+}) {
+  const monthMap = new Map<string, MonthlyEntry>();
+  for (const m of (record.monthly ?? []) as MonthlyEntry[]) {
+    monthMap.set(m.month, m);
+  }
+
+  const data: { month: string; pass: number; fail: number }[] = [];
+  let current = dayjs(startDate).startOf('month');
+  const end = dayjs(endDate).startOf('month');
+
+  while (!current.isAfter(end)) {
+    const key = current.format('YYYY-MM-DD');
+    const entry = monthMap.get(key);
+    const total_count = (entry?.pass_count ?? 0) + (entry?.fail_count ?? 0);
+    const pass_percent =
+      total_count > 0 ? (entry?.pass_count ?? 0) / total_count : 0;
+
+    data.push({
+      month: `${current.format('MMM YYYY')} - ${(100 * pass_percent).toFixed(1)} %`,
+      pass: entry?.pass_count ?? 0,
+      fail: entry?.fail_count ?? 0
+    });
+    current = current.add(1, 'month');
+  }
+
+  return (
+    <Paper p='sm' m='sm' withBorder>
+      <BarChart
+        h={220}
+        data={data}
+        dataKey='month'
+        type='stacked'
+        series={[
+          { name: 'pass', label: 'Pass', color: 'green.6' },
+          { name: 'fail', label: 'Fail', color: 'red.6' }
+        ]}
+      />
+    </Paper>
+  );
+}
+
 function TestStatisticsPanel({ context }: { context: InvenTreePluginContext }) {
-  const tableState = useTable('test-statistics-table');
+  const tableState = useTable('test-statistics-table', {
+    idAccessor: 'template'
+  });
 
   // Do we want to include variant information?
   const [includeVariants, setIncludeVariants] = useState<boolean>(false);
@@ -37,7 +108,21 @@ function TestStatisticsPanel({ context }: { context: InvenTreePluginContext }) {
       {
         accessor: 'template_detail.test_name',
         title: 'Test Name',
-        switchable: false
+        switchable: false,
+        render: (record: any) => {
+          return (
+            <Group gap='xs' wrap='nowrap'>
+              <ActionIcon size='sm' variant='transparent'>
+                {tableState.isRowExpanded(record.template) ? (
+                  <IconChevronDown />
+                ) : (
+                  <IconChevronRight />
+                )}
+              </ActionIcon>
+              <Text>{record.template_detail.test_name}</Text>
+            </Group>
+          );
+        }
       },
       {
         accessor: 'template_detail.description',
@@ -84,7 +169,20 @@ function TestStatisticsPanel({ context }: { context: InvenTreePluginContext }) {
         }
       }
     ];
-  }, []);
+  }, [tableState.isRowExpanded]);
+
+  const rowExpansion: DataTableRowExpansionProps<any> = useMemo(() => {
+    return {
+      allowMultiple: true,
+      content: ({ record }: { record: any }) => (
+        <MonthlyBarChart
+          record={record}
+          startDate={startDate}
+          endDate={endDate}
+        />
+      )
+    };
+  }, [startDate, endDate]);
 
   return (
     <>
@@ -141,10 +239,11 @@ function TestStatisticsPanel({ context }: { context: InvenTreePluginContext }) {
               params: {
                 ...(context.context?.filters ?? {}),
                 include_variants: includeVariants,
-                date_after: startDate.toISOString().split('T')[0], // Only include the date portion for the 'date_after' filter
-                date_before: endDate.toISOString().split('T')[0] // Only include the date portion for the 'date_before' filter
+                date_after: startDate.toISOString().split('T')[0],
+                date_before: endDate.toISOString().split('T')[0]
               },
-              enableSearch: false
+              enableSearch: false,
+              rowExpansion: rowExpansion
             }}
             context={context}
           />
