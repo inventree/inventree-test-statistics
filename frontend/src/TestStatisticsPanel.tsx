@@ -52,8 +52,12 @@ function MonthlyBarChart({
   while (!current.isAfter(end)) {
     const key = current.format('YYYY-MM-DD');
     const entry = monthMap.get(key);
+    const total_count = (entry?.pass_count ?? 0) + (entry?.fail_count ?? 0);
+    const pass_percent =
+      total_count > 0 ? (entry?.pass_count ?? 0) / total_count : 0;
+
     data.push({
-      month: current.format('MMM YYYY'),
+      month: `${current.format('MMM YYYY')} - ${(100 * pass_percent).toFixed(1)} %`,
       pass: entry?.pass_count ?? 0,
       fail: entry?.fail_count ?? 0
     });
