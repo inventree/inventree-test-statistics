@@ -86,6 +86,9 @@ class TestStatisticsView(APIView):
 
         templates = PartTestTemplate.objects.all()
 
+        # Only allow test templates which are enabled
+        templates = templates.filter(enabled=True)
+
         # Filter by Part
         if part := kwargs.get('part'):
             include_variants = kwargs.get('include_variants', False)
