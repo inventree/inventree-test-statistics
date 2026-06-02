@@ -12,6 +12,8 @@ class TestStatisticsRequestSerializer(serializers.Serializer):
     """Serializer for requesting test statistics data from the TestStatistics plugin."""
 
     class Meta:
+        """Meta class for the TestStatisticsRequestSerializer."""
+
         fields = [
             'template',
             'part',
@@ -24,11 +26,24 @@ class TestStatisticsRequestSerializer(serializers.Serializer):
             'finished_after',
         ]
 
-    template = serializers.PrimaryKeyRelatedField(queryset=PartTestTemplate.objects.all(), many=False, required=False, label='Template')
-    part = serializers.PrimaryKeyRelatedField(queryset=Part.objects.all(), many=False, required=False, label='Part')
-    include_variants = serializers.BooleanField(required=False, label='Include Variants', default=False)
-    build = serializers.PrimaryKeyRelatedField(queryset=Build.objects.all(), many=False, required=False, label='Build Order')
-    stock_item = serializers.PrimaryKeyRelatedField(queryset=StockItem.objects.all(), many=False, required=False, label='Stock Item')
+    template = serializers.PrimaryKeyRelatedField(
+        queryset=PartTestTemplate.objects.all(),
+        many=False,
+        required=False,
+        label='Template',
+    )
+    part = serializers.PrimaryKeyRelatedField(
+        queryset=Part.objects.all(), many=False, required=False, label='Part'
+    )
+    include_variants = serializers.BooleanField(
+        required=False, label='Include Variants', default=False
+    )
+    build = serializers.PrimaryKeyRelatedField(
+        queryset=Build.objects.all(), many=False, required=False, label='Build Order'
+    )
+    stock_item = serializers.PrimaryKeyRelatedField(
+        queryset=StockItem.objects.all(), many=False, required=False, label='Stock Item'
+    )
 
     # Date filters for the primary test result date (e.g. test completion date)
     date_before = serializers.DateTimeField(required=False, label='Date Before')
@@ -41,21 +56,33 @@ class TestStatisticsRequestSerializer(serializers.Serializer):
     finished_after = serializers.DateTimeField(required=False, label='Finished After')
 
 
+class TestStatisticMonthSerializer(serializers.Serializer):
+    """Serializer for encoding monthly test statistics results for the TestStatistics plugin."""
+
+    class Meta:
+        """Meta class for the TestStatisticMonthSerializer."""
+
+        fields = ['month', 'pass_count', 'fail_count']
+
+    month = serializers.DateField(label='Month', read_only=True)
+    pass_count = serializers.IntegerField(label='Pass Count', read_only=True)
+    fail_count = serializers.IntegerField(label='Fail Count', read_only=True)
+
+
 class TestStatisticsSerializer(serializers.Serializer):
     """Serializer for encoding test statistics results for the TestStatistics plugin."""
 
     class Meta:
         """Meta class for the TestStatisticsSerializer."""
 
-        fields = [
-            'template',
-            'template_detail',
-            'pass_count',
-            'fail_count',
-        ]
+        fields = ['template', 'template_detail', 'pass_count', 'fail_count', 'monthly']
 
     template = serializers.PrimaryKeyRelatedField(label='Template ID', read_only=True)
     pass_count = serializers.IntegerField(label='Pass Count', read_only=True)
     fail_count = serializers.IntegerField(label='Fail Count', read_only=True)
-
-    template_detail = PartTestTemplateSerializer(label='Template Detail', source='template', read_only=True)
+    monthly = TestStatisticMonthSerializer(
+        label='Monthly Statistics', many=True, read_only=True
+    )
+    template_detail = PartTestTemplateSerializer(
+        label='Template Detail', source='template', read_only=True
+    )
