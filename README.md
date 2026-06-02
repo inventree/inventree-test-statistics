@@ -1,6 +1,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI](https://img.shields.io/pypi/v/inventree-test-statistics)](https://pypi.org/project/inventree-test-statistics/)
-![PEP](https://github.com/inventree/inventree-test-statistics/actions/workflows/pep.yaml/badge.svg)
+![PEP](https://github.com/inventree/inventree-test-statistics/actions/workflows/ci.yaml/badge.svg)
 
 
 # InvenTree Test Statistics Plugin
