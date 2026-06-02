@@ -87,6 +87,8 @@ class TestStatisticsView(APIView):
             part: Filter by Part
             stock_item: Filter by StockItem
             build: Filter by Build Order
+            date_before: Filter by test result date (before)
+            date_after: Filter by test result date (after)
             started_after: Filter by test start date (after)
             started_before: Filter by test start date (before)
             finished_after: Filter by test completion date (after)
@@ -120,6 +122,13 @@ class TestStatisticsView(APIView):
         if stock_item := kwargs.get('stock_item'):
             queryset = queryset.filter(stock_item=stock_item)
         
+        # Filter by primary test result date (e.g. test completion date)
+        if date_after := kwargs.get('date_after'):
+            queryset = queryset.filter(date__gte=date_after)
+
+        if date_before := kwargs.get('date_before'):
+            queryset = queryset.filter(date__lte=date_before)
+
         # Filter by started date
         if started_after := kwargs.get('started_after'):
             queryset = queryset.filter(started__gte=started_after)

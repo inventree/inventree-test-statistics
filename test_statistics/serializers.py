@@ -30,6 +30,11 @@ class TestStatisticsRequestSerializer(serializers.Serializer):
     build = serializers.PrimaryKeyRelatedField(queryset=Build.objects.all(), many=False, required=False, label='Build Order')
     stock_item = serializers.PrimaryKeyRelatedField(queryset=StockItem.objects.all(), many=False, required=False, label='Stock Item')
 
+    # Date filters for the primary test result date (e.g. test completion date)
+    date_before = serializers.DateTimeField(required=False, label='Date Before')
+    date_after = serializers.DateTimeField(required=False, label='Date After')
+
+    # Date filters associated with test start and completion times
     started_before = serializers.DateTimeField(required=False, label='Started Before')
     started_after = serializers.DateTimeField(required=False, label='Started After')
     finished_before = serializers.DateTimeField(required=False, label='Finished Before')
