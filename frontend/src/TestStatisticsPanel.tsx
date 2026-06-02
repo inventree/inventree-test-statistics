@@ -1,13 +1,31 @@
-import { Alert, Group, Paper, Text} from '@mantine/core';
-import { useMemo } from 'react';
+import { Alert, Group, Paper, Stack, Text} from '@mantine/core';
+import { useEffect, useMemo, useState } from 'react';
 import { InvenTreePluginContext, InvenTreeTable, useTable } from '@inventreedb/ui';
 import { IconInfoCircle } from '@tabler/icons-react';
+import dayjs from 'dayjs';
+import { DateValue, MonthPickerInput } from '@mantine/dates';
 
 const TEST_STATISTICS_URL = "plugin/test_statistics/statistics/";
 
 function TestStatisticsPanel({context}: {context: InvenTreePluginContext}) {
 
     const tableState = useTable('test-statistics-table');
+
+  // Starting date for the test history
+  const [startDate, setStartDate] = useState<Date>(
+    dayjs().subtract(1, 'year').toDate()
+  );
+
+  // Ending date for the order history
+  const [endDate, setEndDate] = useState<Date>(
+    dayjs().add(1, 'month').toDate()
+  );
+
+  useEffect(() => {
+    // Whenever the date range changes, we want to reset the table state to trigger a reload
+    tableState.refreshTable();
+  }, [startDate, endDate]);
+
 
     const columns = useMemo(() => {
         return [
@@ -70,6 +88,35 @@ function TestStatisticsPanel({context}: {context: InvenTreePluginContext}) {
             and percentages.
         </Alert>
         <Paper withBorder p="sm" m="sm">
+            <Stack gap='xs'>
+                <Group gap='xs'>
+                              <MonthPickerInput
+            style={{ minWidth: '200px' }}
+            value={startDate}
+            label={`Start Date`}
+            onChange={(value: DateValue) => {
+              if (value) {
+                const newStartDate = dayjs(value).startOf('month').toDate();
+                if (newStartDate < endDate) {
+                  setStartDate(newStartDate);
+                }
+              }
+            }}
+          />
+          <MonthPickerInput
+            value={endDate}
+            style={{ minWidth: '200px' }}
+            label={`End Date`}
+            onChange={(value: DateValue) => {
+              if (value) {
+                const newEndDate = dayjs(value).endOf('month').toDate();
+                if (newEndDate > startDate) {
+                  setEndDate(newEndDate);
+                }
+              }
+            }}
+          />
+                </Group>
             <InvenTreeTable
                 url={TEST_STATISTICS_URL}
                 tableState={tableState}
@@ -78,11 +125,14 @@ function TestStatisticsPanel({context}: {context: InvenTreePluginContext}) {
                     params: {
                         ...(context.context?.filters ?? {}),
                         include_variants: true,
+                        date_after: startDate.toISOString().split('T')[0], // Only include the date portion for the 'date_after' filter
+                        date_before: endDate.toISOString().split('T')[0], // Only include the date portion for the 'date_before' filter
                     },
                     enableSearch: false,
                 }}
                 context={context}
             />
+            </Stack>
         </Paper>
         </>
     );
