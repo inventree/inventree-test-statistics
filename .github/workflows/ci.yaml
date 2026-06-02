@@ -39,6 +39,5 @@ jobs:
         run: |
           cd frontend
           npm install
-          npm run translate
           npm run build
           npm run lint
