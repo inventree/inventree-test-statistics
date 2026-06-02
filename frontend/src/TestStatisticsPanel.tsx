@@ -110,6 +110,7 @@ function TestStatisticsPanel({ context }: { context: InvenTreePluginContext }) {
                 }
               }}
             />
+
             <MonthPickerInput
               value={endDate}
               style={{ minWidth: '200px' }}
