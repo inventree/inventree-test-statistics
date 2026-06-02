@@ -1,4 +1,4 @@
-import { Alert, Group, Paper, Stack, Text} from '@mantine/core';
+import { Alert, Group, Paper, Stack, Switch, Text} from '@mantine/core';
 import { useEffect, useMemo, useState } from 'react';
 import { InvenTreePluginContext, InvenTreeTable, useTable } from '@inventreedb/ui';
 import { IconInfoCircle } from '@tabler/icons-react';
@@ -9,7 +9,10 @@ const TEST_STATISTICS_URL = "plugin/test_statistics/statistics/";
 
 function TestStatisticsPanel({context}: {context: InvenTreePluginContext}) {
 
-    const tableState = useTable('test-statistics-table');
+  const tableState = useTable('test-statistics-table');
+
+  // Do we want to include variant information?
+  const [ includeVariants, setIncludeVariants ] = useState<boolean>(false);
 
   // Starting date for the test history
   const [startDate, setStartDate] = useState<Date>(
@@ -22,9 +25,9 @@ function TestStatisticsPanel({context}: {context: InvenTreePluginContext}) {
   );
 
   useEffect(() => {
-    // Whenever the date range changes, we want to reset the table state to trigger a reload
+    // Whenever user options change, we want to reset the table state to trigger a reload
     tableState.refreshTable();
-  }, [startDate, endDate]);
+  }, [includeVariants, startDate, endDate]);
 
 
     const columns = useMemo(() => {
@@ -116,6 +119,7 @@ function TestStatisticsPanel({context}: {context: InvenTreePluginContext}) {
               }
             }}
           />
+          <Switch checked={includeVariants} onChange={(event) => setIncludeVariants(event.currentTarget.checked)} label="Include Variants" description="Include variant parts in the statistics"/>
                 </Group>
             <InvenTreeTable
                 url={TEST_STATISTICS_URL}
@@ -124,7 +128,7 @@ function TestStatisticsPanel({context}: {context: InvenTreePluginContext}) {
                 props={{
                     params: {
                         ...(context.context?.filters ?? {}),
-                        include_variants: true,
+                        include_variants: includeVariants,
                         date_after: startDate.toISOString().split('T')[0], // Only include the date portion for the 'date_after' filter
                         date_before: endDate.toISOString().split('T')[0], // Only include the date portion for the 'date_before' filter
                     },
