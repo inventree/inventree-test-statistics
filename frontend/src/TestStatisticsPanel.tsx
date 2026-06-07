@@ -259,6 +259,6 @@ function TestStatisticsPanel({ context }: { context: InvenTreePluginContext }) {
  * @param target - The target HTML element to render the panel into
  * @param context - The context object to pass to the panel
  */
-export function renderPanel(context: InvenTreePluginContext) {
+export function RenderPanel(context: InvenTreePluginContext) {
   return <TestStatisticsPanel context={context} />;
 }
